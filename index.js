@@ -27,6 +27,7 @@ var AUTH_TYPE = {
  * @property {string}  [session_name='cas_user']
  * @property {string}  [session_info=false]
  * @property {boolean} [destroy_session=false]
+ * @property {string}  [service_url_logout='']
  */
 
 /**
@@ -167,6 +168,8 @@ function CASAuthentication(options) {
     this.session_info    = [ '2.0', '3.0', 'saml1.1' ].indexOf(this.cas_version) >= 0 && options.session_info !== undefined ? options.session_info : false;
     this.destroy_session = options.destroy_session !== undefined ? !!options.destroy_session : false;
 
+    this.service_url_logout = options.service_url_logout !== undefined ? '?service=' + options.service_url_logout : '';
+
     // Bind the prototype routing methods to this instance of CASAuthentication.
     this.bounce          = this.bounce.bind(this);
     this.bounce_redirect = this.bounce_redirect.bind(this);
@@ -271,7 +274,7 @@ CASAuthentication.prototype._apiLogin = function(req, resp, next) {
         password: encodeURIComponent(req.body.password)
     })
 
-    
+
     var requestOptions = {
         host: this.cas_host,
         port: this.cas_port,
@@ -279,13 +282,13 @@ CASAuthentication.prototype._apiLogin = function(req, resp, next) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
-          }
+        }
     };
 
     var req1 = this.request_client.request(requestOptions, (res) => {
         var result = '';
         res.on('data', function (chunk) {
-          result += chunk;
+            result += chunk;
         });
         res.on('end', () => {
             if(res.headers.location === undefined) {
@@ -309,7 +312,7 @@ CASAuthentication.prototype._apiLogin = function(req, resp, next) {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 }
-            } 
+            }
             var req2 = this.request_client.request(requestOptions2, (res) => {
                 var resultw = '';
                 res.on('data', function (chunk) {
@@ -347,15 +350,15 @@ CASAuthentication.prototype._apiLogin = function(req, resp, next) {
                                     success : false
                                 })
                             }
-                            
+
                         })
 
                     })
                     r3.write("");
                     r3.end();
                 })
-          })
-          // req error
+            })
+            // req error
             req2.on('error', function (err) {
                 console.log(err);
                 throw Error(err);
@@ -403,7 +406,7 @@ CASAuthentication.prototype.logout = function(req, res, next) {
     }
 
     // Redirect the client to the CAS logout.
-    res.redirect(this.cas_url + '/logout');
+    res.redirect(this.cas_url + '/logout'+ this.service_url_logout);
 };
 
 /**
