@@ -32,7 +32,8 @@ var cas = new CASAuthentication({
     session_name    : 'cas_user',
     session_info    : 'cas_userinfo',
     destroy_session : false,
-    return_to       : 'https://my-website.com/'
+    return_to       : 'https://my-website.com/',
+    service_url_logout :'https://my-website.com/'
 });
 ```
 
@@ -52,6 +53,8 @@ var cas = new CASAuthentication({
 | session_info | _string_ | The name of the session variable that will store the CAS user information once they are authenticated. If set to false (or something that evaluates as false), the additional information supplied by the CAS will not be forwarded. This will not work with CAS 1.0, as it does not support additional user information. | _false_ |
 | destroy_session | _boolean_ | If true, the logout function will destroy the entire session upon CAS logout. Otherwise, it will only delete the session variable storing the CAS user. | _false_ |
 | return_to | _string_ | redirect to this url after successfull login  | "" |
+| service_url_logout | _string_ | add link service when logout | "" |
+ 
 
 ## Usage
 
